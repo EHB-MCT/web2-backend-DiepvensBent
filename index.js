@@ -139,7 +139,28 @@ app.post('/saveRecipe', async (req, res) => {
     }
 });
 
-
+app.put('/changeRecipe', async (req, res) => {
+    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
+        res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
+        return;
+    }
+    try {
+        await client.connect();
+        const colli = client.db('courseProject').collection('userData');
+        const data = await colli.findOne({
+            rid: req.body.rid
+        });
+        let result = await colli.updateOne({
+            rid: req.body.rid,
+            title: req.body.title,
+            aggregateLikes: req.body.aggregateLikes,
+            readyInMinutes: req.body.readyInMinutes,
+            diets: req.body.diets
+        })
+    } finally {
+        await client.close();
+    }
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
