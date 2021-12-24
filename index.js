@@ -49,6 +49,55 @@ app.get('/test', (req, res) => {
     res.send(data);
 })
 
+app.post('/saveBoardgame', async (req, res) => {
+
+    if(!req.body.bggid || !req.body.name || !req.body.genre || !req.body.mechanisms
+        || !req.body.description){
+        res.status(400).send('Bad request: missing id, name, genre, mechanisms or description');
+        return;
+    }
+
+    try{
+        //connect to the db
+        await client.connect();
+
+        //retrieve the boardgame collection data
+        const colli = client.db('courseProject').collection('userData');
+
+        // Validation for double boardgames
+        const bg = await colli.findOne({bggid: req.body.bggid});
+        if(bg){
+            res.status(400).send('Bad request: boardgame already exists with bggid ' + req.body.bggid);
+            return;
+        } 
+        // Create the new boardgame object
+        let newBoardgame = {
+            bggid: req.body.bggid,
+            name: req.body.name,
+            genre: req.body.genre,
+            mechanisms: req.body.mechanisms,
+            description: req.body.description
+        }
+        
+        // Insert into the database
+        let insertResult = await colli.insertOne(newBoardgame);
+
+        //Send back successmessage
+        res.status(201).send(`Boardgame succesfully saved with id ${req.body.bggid}`);
+        return;
+    }catch(error){
+        console.log(error);
+        res.status(500).send({
+            error: 'Something went wrong',
+            value: error
+        });
+    }finally {
+        await client.close();
+    }
+});
+
+
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
