@@ -2,7 +2,8 @@ const express = require('express');
 const fs = require('fs/promises');
 const bodyParser = require('body-parser');
 const {
-    MongoClient
+    MongoClient,
+    ObjectId
 } = require('mongodb');
 
 require('dotenv').config();
@@ -35,31 +36,60 @@ app.get('/getRecipes', async (req, res) => {
     }
 });
 
-app.get('/recipe', async (req,res) => {
-    try{
+//recipe by id /recipe?id=
+app.get('/recipe', async (req, res) => {
+    try {
         await client.connect();
         const colli = client.db('courseProject').collection('userData');
-        const query = { rid: req.query.id };
+        const query = {
+            rid: req.query.id
+        };
 
         const recipe = await colli.findOne(query);
 
-        if(recipe){
+        if (recipe) {
             res.status(200).send(recipe);
             return;
-        }else{
+        } else {
             res.status(400).send('Boardgame could not be found with id: ' + req.query.id);
         }
-    }catch(error){
+    } catch (error) {
         console.log(error);
         res.status(500).send({
             error: 'Something went wrong',
             value: error
         });
-    }finally {
+    } finally {
         await client.close();
     }
 });
 
+app.delete('/deleteRecipe', async (req, res) => {
+    try {
+        await client.connect();
+        const colli = client.db("courseProject").collection("userData");
+        // Create a query for a challenge to delete
+        const query = {
+            rid: req.query.id
+        };
+
+        // Deleting the challenge
+        const result = await colli.deleteOne(query);
+        if (result.deletedCount === 1) {
+            res.status(200).send(`Challenge with id "${req.query.id}" successfully deleted.`);
+        } else {
+            res.status(404).send("No documents matched the query. Deleted 0 documents.");
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            error: "something went wrong",
+            value: error,
+        });
+    } finally {
+        await client.close();
+    }
+});
 
 app.post('/saveRecipe', async (req, res) => {
 
