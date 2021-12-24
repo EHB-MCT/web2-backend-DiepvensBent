@@ -49,11 +49,11 @@ app.get('/test', (req, res) => {
     res.send(data);
 })
 
-app.post('/saveBoardgame', async (req, res) => {
+app.post('/saveRecipe', async (req, res) => {
 
-    if(!req.body.bggid || !req.body.name || !req.body.genre || !req.body.mechanisms
+    if(!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets
         || !req.body.description){
-        res.status(400).send('Bad request: missing id, name, genre, mechanisms or description');
+        res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
         return;
     }
 
@@ -61,29 +61,29 @@ app.post('/saveBoardgame', async (req, res) => {
         //connect to the db
         await client.connect();
 
-        //retrieve the boardgame collection data
+        //retrieve the recipe collection data
         const colli = client.db('courseProject').collection('userData');
 
-        // Validation for double boardgames
-        const bg = await colli.findOne({bggid: req.body.bggid});
-        if(bg){
-            res.status(400).send('Bad request: boardgame already exists with bggid ' + req.body.bggid);
+        // Validation for double recipes
+        const data = await colli.findOne({rid: req.body.rid});
+        if(data){
+            res.status(400).send('Bad request: recipe already exists with rid ' + req.body.rid);
             return;
         } 
-        // Create the new boardgame object
-        let newBoardgame = {
-            bggid: req.body.bggid,
-            name: req.body.name,
-            genre: req.body.genre,
-            mechanisms: req.body.mechanisms,
-            description: req.body.description
+        // Create the new recipe object
+        let newRecipe = {
+            rid: req.body.rid,
+            title: req.body.title,
+            aggregateLikes: req.body.aggregateLikes,
+            readyInMinutes: req.body.readyInMinutes,
+            diets: req.body.diets
         }
         
         // Insert into the database
-        let insertResult = await colli.insertOne(newBoardgame);
+        let insertResult = await colli.insertOne(newRecipe);
 
         //Send back successmessage
-        res.status(201).send(`Boardgame succesfully saved with id ${req.body.bggid}`);
+        res.status(201).send(`Boardgame succesfully saved with id ${req.body.rid}`);
         return;
     }catch(error){
         console.log(error);
