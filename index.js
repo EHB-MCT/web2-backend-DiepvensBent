@@ -17,20 +17,20 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 
-app.get('/cheese', async (req, res) => {
-    try{
+app.get('/getRecipes', async (req, res) => {
+    try {
         await client.connect();
         const colli = client.db('courseProject').collection('userData');
         const data = await colli.find({}).toArray();
 
-        res.status(200).send(JSON.parse(data));
-    }catch(error){
+        res.status(200).send(data);
+    } catch (error) {
         console.log(error);
         res.status(500).send({
-           error: 'Something went wrong',
-           value: error
+            error: 'Something went wrong',
+            value: error
         });
-    }finally{
+    } finally {
         await client.close();
     }
 });
@@ -51,12 +51,12 @@ app.get('/test', (req, res) => {
 
 app.post('/saveRecipe', async (req, res) => {
 
-    if(!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets){
+    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
         res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
         return;
     }
 
-    try{
+    try {
         //connect to the db
         await client.connect();
 
@@ -64,11 +64,13 @@ app.post('/saveRecipe', async (req, res) => {
         const colli = client.db('courseProject').collection('userData');
 
         // Validation for double recipes
-        const data = await colli.findOne({rid: req.body.rid});
-        if(data){
+        const data = await colli.findOne({
+            rid: req.body.rid
+        });
+        if (data) {
             res.status(400).send('Bad request: recipe already exists with rid ' + req.body.rid);
             return;
-        } 
+        }
         // Create the new recipe object
         let newRecipe = {
             rid: req.body.rid,
@@ -77,20 +79,20 @@ app.post('/saveRecipe', async (req, res) => {
             readyInMinutes: req.body.readyInMinutes,
             diets: req.body.diets
         }
-        
+
         // Insert into the database
         let insertResult = await colli.insertOne(newRecipe);
 
         //Send back successmessage
         res.status(201).send(`Boardgame succesfully saved with id ${req.body.rid}`);
         return;
-    }catch(error){
+    } catch (error) {
         console.log(error);
         res.status(500).send({
             error: 'Something went wrong',
             value: error
         });
-    }finally {
+    } finally {
         await client.close();
     }
 });
