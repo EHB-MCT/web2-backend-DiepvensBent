@@ -51,8 +51,7 @@ app.get('/test', (req, res) => {
 
 app.post('/saveRecipe', async (req, res) => {
 
-    if(!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets
-        || !req.body.description){
+    if(!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets){
         res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
         return;
     }
