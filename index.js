@@ -35,19 +35,31 @@ app.get('/getRecipes', async (req, res) => {
     }
 });
 
+app.get('/recipe', async (req,res) => {
+    try{
+        await client.connect();
+        const colli = client.db('courseProject').collection('userData');
+        const query = { rid: req.query.id };
 
-app.post('/saveData', (req, res) => {
-    console.log(req.body);
+        const recipe = await colli.findOne(query);
 
-    res.send(`Data received, hello ${req.body.name}`)
-});
-app.get('/test', (req, res) => {
-    let data = {
-        name: "Bent",
-        lastname: "Diepvens"
+        if(recipe){
+            res.status(200).send(recipe);
+            return;
+        }else{
+            res.status(400).send('Boardgame could not be found with id: ' + req.query.id);
+        }
+    }catch(error){
+        console.log(error);
+        res.status(500).send({
+            error: 'Something went wrong',
+            value: error
+        });
+    }finally {
+        await client.close();
     }
-    res.send(data);
-})
+});
+
 
 app.post('/saveRecipe', async (req, res) => {
 
