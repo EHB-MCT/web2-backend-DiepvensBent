@@ -134,7 +134,7 @@ app.post('/saveRecipe', async (req, res) => {
         }
 
         // Insert into the database
-        let insertResult = await colli.insertOne(newRecipe);
+        let insertResult = await colli.insertOne(req.body);
 
         //Send back successmessage
         res.status(201).send(`Recipe succesfully saved with id ${req.body.id}`);
