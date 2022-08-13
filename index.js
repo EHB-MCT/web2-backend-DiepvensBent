@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs/promises');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 const {
     MongoClient,
     ObjectId
@@ -14,6 +16,10 @@ const client = new MongoClient(process.env.FINAL_URL);
 const app = express();
 const port = process.env.PORT;
 
+
+const corsOptions = { origin: ["https://web2-courseproject-backend.herokuapp.com"], credentials: true }
+
+app.use(cors(corsOptions));
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
