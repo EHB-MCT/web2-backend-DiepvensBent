@@ -134,7 +134,7 @@ app.post('/saveRecipe', async (req, res) => {
         }
 
         // Insert into the database
-        let insertResult = await colli.insertOne(req.body);
+        let insertResult = await colli.insertOne(req);
 
         //Send back successmessage
         res.status(201).send(`Recipe succesfully saved with id ${req.body.id}`);
@@ -142,7 +142,7 @@ app.post('/saveRecipe', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send({
-            error: 'Something went wrong',
+            error: 'Something went wrong ',
             value: error
         });
     } finally {
