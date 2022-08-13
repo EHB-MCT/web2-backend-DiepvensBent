@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.get('/getRecipes', async (req, res) => {
     try {
         await client.connect();
-        const colli = client.db('courseProject').collection('userData');
+        const colli = client.db('webDatabase').collection('userData');
         const data = await colli.find({}).toArray();
 
         res.status(200).send(data);
@@ -40,7 +40,7 @@ app.get('/getRecipes', async (req, res) => {
 app.get('/recipe', async (req, res) => {
     try {
         await client.connect();
-        const colli = client.db('courseProject').collection('userData');
+        const colli = client.db('webDatabase').collection('userData');
         const query = {
             rid: req.query.id
         };
@@ -51,7 +51,7 @@ app.get('/recipe', async (req, res) => {
             res.status(200).send(recipe);
             return;
         } else {
-            res.status(400).send('Boardgame could not be found with id: ' + req.query.id);
+            res.status(400).send('Recipe with id:'+ req.query.id +' could not be found.' );
         }
     } catch (error) {
         console.log(error);
@@ -67,18 +67,17 @@ app.get('/recipe', async (req, res) => {
 app.delete('/deleteRecipe', async (req, res) => {
     try {
         await client.connect();
-        const colli = client.db("courseProject").collection("userData");
-        // Create a query for a challenge to delete
+        const colli = client.db("webDatabase").collection("userData");
+
         const query = {
             rid: req.query.id
         };
 
-        // Deleting the challenge
         const result = await colli.deleteOne(query);
         if (result.deletedCount === 1) {
-            res.status(200).send(`Challenge with id "${req.query.id}" successfully deleted.`);
+            res.status(200).send(`Recipe with id "${req.query.id}" successfully deleted.`);
         } else {
-            res.status(404).send("No documents matched the query. Deleted 0 documents.");
+            res.status(404).send("No recipe matched with the query.");
         }
     } catch (error) {
         console.log(error);
@@ -103,7 +102,7 @@ app.post('/saveRecipe', async (req, res) => {
         await client.connect();
 
         //retrieve the recipe collection data
-        const colli = client.db('courseProject').collection('userData');
+        const colli = client.db('webDatabase').collection('userData');
 
         // Validation for double recipes
         const data = await colli.findOne({
@@ -126,7 +125,7 @@ app.post('/saveRecipe', async (req, res) => {
         let insertResult = await colli.insertOne(newRecipe);
 
         //Send back successmessage
-        res.status(201).send(`Boardgame succesfully saved with id ${req.body.rid}`);
+        res.status(201).send(`Reecipe succesfully saved with id ${req.body.rid}`);
         return;
     } catch (error) {
         console.log(error);
@@ -146,7 +145,7 @@ app.put('/changeRecipe', async (req, res) => {
     }
     try {
         await client.connect();
-        const colli = client.db('courseProject').collection('userData');
+        const colli = client.db('webDatabase').collection('userData');
         const data = await colli.findOne({
             rid: req.body.rid
         });
