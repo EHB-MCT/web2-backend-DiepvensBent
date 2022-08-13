@@ -99,10 +99,10 @@ app.delete('/deleteRecipe', async (req, res) => {
 
 app.post('/saveRecipe', async (req, res) => {
 
-    // if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
-    //     res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
-    //     return;
-    // }
+    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
+        res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
+        return;
+    }
 
     try {
         //connect to the db
@@ -113,27 +113,31 @@ app.post('/saveRecipe', async (req, res) => {
 
         // Validation for double recipes
         const data = await colli.findOne({
-            rid: req.body.id
+            rid: req.body.rid
         });
         if (data) {
-            res.status(400).send('Bad request: recipe already exists with rid ' + req.body.id);
+            res.status(400).send('Bad request: recipe already exists with rid ' + req.body.rid);
             return;
         }
         // Create the new recipe object
 
-        // let newRecipe = {
-        //     rid: req.body.rid,
-        //     title: req.body.title,
-        //     aggregateLikes: req.body.aggregateLikes,
-        //     readyInMinutes: req.body.readyInMinutes,
-        //     diets: req.body.diets
-        // }
+        let newRecipe = {
+            rid: req.body.rid,
+            image: req.body.image,
+            title: req.body.title,
+            aggregateLikes: req.body.aggregateLikes,
+            readyInMinutes: req.body.readyInMinutes,
+            diets: req.body.diets,
+            summary: req.body.summary,
+            extendedIngredients: red.body.extendedIngredients,
+            analyzedInstruction: red.body.analyzedInstructions
+        }
 
         // Insert into the database
-        let insertResult = await colli.insertOne(req.body);
+        let insertResult = await colli.insertOne(newRecipe);
 
         //Send back successmessage
-        res.status(201).send(`Reecipe succesfully saved with id ${req.body.id}`);
+        res.status(201).send(`Recipe succesfully saved with id ${req.body.id}`);
         return;
     } catch (error) {
         console.log(error);
