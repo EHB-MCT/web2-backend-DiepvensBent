@@ -99,10 +99,10 @@ app.delete('/deleteRecipe', async (req, res) => {
 
 app.post('/saveRecipe', async (req, res) => {
 
-    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
-        res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
-        return;
-    }
+    // if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
+    //     res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
+    //     return;
+    // }
 
     try {
         //connect to the db
@@ -113,26 +113,27 @@ app.post('/saveRecipe', async (req, res) => {
 
         // Validation for double recipes
         const data = await colli.findOne({
-            rid: req.body.rid
+            rid: req.body.id
         });
         if (data) {
-            res.status(400).send('Bad request: recipe already exists with rid ' + req.body.rid);
+            res.status(400).send('Bad request: recipe already exists with rid ' + req.body.id);
             return;
         }
         // Create the new recipe object
-        let newRecipe = {
-            rid: req.body.rid,
-            title: req.body.title,
-            aggregateLikes: req.body.aggregateLikes,
-            readyInMinutes: req.body.readyInMinutes,
-            diets: req.body.diets
-        }
+
+        // let newRecipe = {
+        //     rid: req.body.rid,
+        //     title: req.body.title,
+        //     aggregateLikes: req.body.aggregateLikes,
+        //     readyInMinutes: req.body.readyInMinutes,
+        //     diets: req.body.diets
+        // }
 
         // Insert into the database
-        let insertResult = await colli.insertOne(newRecipe);
+        let insertResult = await colli.insertOne(req.body);
 
         //Send back successmessage
-        res.status(201).send(`Reecipe succesfully saved with id ${req.body.rid}`);
+        res.status(201).send(`Reecipe succesfully saved with id ${req.body.id}`);
         return;
     } catch (error) {
         console.log(error);
