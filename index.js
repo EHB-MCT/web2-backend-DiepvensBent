@@ -130,7 +130,7 @@ app.post('/saveRecipe', async (req, res) => {
             diets: req.body.diets,
             summary: req.body.summary,
             extendedIngredients: req.body.extendedIngredients,
-            analyzedInstruction: req.body.analyzedInstructions
+            analyzedInstructions: req.body.analyzedInstructions
         }
 
         // Insert into the database
@@ -166,7 +166,10 @@ app.put('/changeRecipe', async (req, res) => {
             title: req.body.title,
             aggregateLikes: req.body.aggregateLikes,
             readyInMinutes: req.body.readyInMinutes,
-            diets: req.body.diets
+            diets: req.body.diets,
+            summary: req.body.summary,
+            extendedIngredients: req.body.extendedIngredients,
+            analyzedInstructions: req.body.analyzedInstructions
         })
     } finally {
         await client.close();
