@@ -174,7 +174,8 @@ app.put('/changeRecipe', async (req, res) => {
             extendedIngredients: req.body.extendedIngredients,
             analyzedInstructions: req.body.analyzedInstructions
         })
-    
+        res.status(201).send(`Recipe succesfully changed`);
+        return;
     } finally {
         await client.close();
     }
