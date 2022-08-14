@@ -151,18 +151,21 @@ app.post('/saveRecipe', async (req, res) => {
 });
 
 app.put('/changeRecipe', async (req, res) => {
-    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets|| !req.body.summary || !req.body.extendedIngredients || !analyzedInstructions) {
-        res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
+    if (!req.body.rid || !req.body.title || !req.body.image || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets || !req.body.summary || !req.body.extendedIngredients || !req.body.analyzedInstructions) {
+        res.status(400).send('Bad request: missing component');
         return;
     }
     try {
+        
+
         await client.connect();
         const colli = client.db('webDatabase').collection('userData');
         const data = await colli.findOne({
-            rid: req.body.rid
+            rid: req.query.id
         });
-        let result = await colli.updateOne({
+        let result = await colli.replaceOne(data,{
             rid: req.body.rid,
+            image: req.body.image,
             title: req.body.title,
             aggregateLikes: req.body.aggregateLikes,
             readyInMinutes: req.body.readyInMinutes,
@@ -171,6 +174,7 @@ app.put('/changeRecipe', async (req, res) => {
             extendedIngredients: req.body.extendedIngredients,
             analyzedInstructions: req.body.analyzedInstructions
         })
+    
     } finally {
         await client.close();
     }
