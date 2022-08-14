@@ -151,7 +151,7 @@ app.post('/saveRecipe', async (req, res) => {
 });
 
 app.put('/changeRecipe', async (req, res) => {
-    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
+    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets|| !req.body.summary || !req.body.extendedIngredients || !analyzedInstructions) {
         res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
         return;
     }
