@@ -18,7 +18,6 @@ const port = process.env.PORT;
 
 
 const corsOptions = { origin:'*', credentials: true }
-//app.use(cors);
 app.use(cors(corsOptions));
 
 app.use(express.static('public'));
@@ -99,8 +98,8 @@ app.delete('/deleteRecipe', async (req, res) => {
 
 app.post('/saveRecipe', async (req, res) => {
 
-    if (!req.body.rid || !req.body.title || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets) {
-        res.status(400).send('Bad request: missing id, title, aggregateLikes, readyInMinutes,  diets');
+    if (!req.body.rid || !req.body.title || !req.body.image || !req.body.aggregateLikes || !req.body.readyInMinutes || !req.body.diets || !req.body.summary || !req.body.extendedIngredients || !req.body.analyzedInstructions) {
+        res.status(400).send('Bad request: missing component');
         return;
     }
 
@@ -136,7 +135,6 @@ app.post('/saveRecipe', async (req, res) => {
         // Insert into the database
         let insertResult = await colli.insertOne(newRecipe);
 
-        //Send back successmessage
         res.status(201).send(`Recipe succesfully saved with id ${req.body.rid}`);
         return;
     } catch (error) {
